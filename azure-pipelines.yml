@@ -1,0 +1,33 @@
+
+trigger:
+- main  # Replace 'main' with your branch name if needed
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+# Step 1: Install Terraform
+- task: TerraformInstaller@0
+  inputs:
+    terraformVersion: 'latest'
+
+# Step 2: Initialize Terraform
+- script: |
+    terraform init
+  displayName: 'Terraform Init'
+
+# Step 3: Plan Terraform
+- script: |
+    terraform plan -out=tfplan
+  displayName: 'Terraform Plan'
+
+# Step 4: Apply Terraform
+- script: |
+    terraform apply -auto-approve tfplan
+  displayName: 'Terraform Apply'
+
+# Optional: Destroy step (if needed for cleanup)
+# Uncomment to include destroy functionality
+# - script: |
+#     terraform destroy -auto-approve
+#   displayName: 'Terraform Destroy'
