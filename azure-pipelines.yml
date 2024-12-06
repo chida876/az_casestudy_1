@@ -1,15 +1,20 @@
-
 trigger:
-- main  # Replace 'main' with your branch name if needed
+- main  # Replace with your branch name if needed
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: Default  # Use the default self-hosted agent pool
 
 steps:
-# Step 1: Install Terraform
-- task: TerraformInstaller@0
+# Step 1: Install Terraform (if not already installed on the self-hosted agent)
+- task: UsePythonVersion@0
   inputs:
-    terraformVersion: 'latest'
+    versionSpec: '3.x'
+    addToPath: true
+- script: |
+    curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list
+    apt update && apt install -y terraform
+  displayName: 'Install Terraform'
 
 # Step 2: Initialize Terraform
 - script: |
