@@ -1,38 +1,18 @@
 trigger:
-- main  # Replace with your branch name if needed
+- main  # Replace with your desired branch if needed
 
 pool:
-  name: Default  # Use the default self-hosted agent pool
+  name: Default  # Use the default agent pool, or specify the one where your agent is installed
 
 steps:
-# Step 1: Install Terraform (if not already installed on the self-hosted agent)
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.x'
-    addToPath: true
-- script: |
-    curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list
-    apt update && apt install -y terraform
-  displayName: 'Install Terraform'
+# Step 1: Run a simple shell command to verify agent is working
+- script: echo "Hello, Azure DevOps! The agent is working."
+  displayName: 'Test Agent Connection'
 
-# Step 2: Initialize Terraform
+# Step 2: Check the system info to ensure the agent has necessary resources
 - script: |
-    terraform init
-  displayName: 'Terraform Init'
-
-# Step 3: Plan Terraform
-- script: |
-    terraform plan -out=tfplan
-  displayName: 'Terraform Plan'
-
-# Step 4: Apply Terraform
-- script: |
-    terraform apply -auto-approve tfplan
-  displayName: 'Terraform Apply'
-
-# Optional: Destroy step (if needed for cleanup)
-# Uncomment to include destroy functionality
-# - script: |
-#     terraform destroy -auto-approve
-#   displayName: 'Terraform Destroy'
+    echo "System Information:"
+    uname -a
+    df -h
+    free -h
+  displayName: 'Check System Info'
